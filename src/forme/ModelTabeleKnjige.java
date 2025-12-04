@@ -15,7 +15,7 @@ import model.Knjiga;
 public class ModelTabeleKnjige extends AbstractTableModel {
 
     private List<Knjiga> listaKnjiga;
-    private final String[] kolone = {"Naslov", "Autor", "ISBN", "Godina izdanja"};
+    private final String[] kolone = {"id","Naslov", "Autor", "ISBN", "Godina izdanja"};
     
     public ModelTabeleKnjige(List<Knjiga> listaKnjiga){
         this.listaKnjiga = listaKnjiga;
@@ -36,18 +36,25 @@ public class ModelTabeleKnjige extends AbstractTableModel {
         Knjiga knjiga = listaKnjiga.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return knjiga.getNaslov();
+                return knjiga.getId();
             case 1:
-                return knjiga.getAutor().getIme() + " " + knjiga.getAutor().getPrezime();
+                return knjiga.getNaslov();
             case 2:
-                return knjiga.getISBN();
+                return knjiga.getAutor().getIme() + " " + knjiga.getAutor().getPrezime();
             case 3:
+                return knjiga.getISBN();
+            case 4:
                 return knjiga.getGodinaIzdanja();
             default:
                 return null;
         }
     }
     //Dodajemo sami ovu metodu
+
+    public List<Knjiga> getListaKnjiga() {
+        return listaKnjiga;
+    }
+    
 
     @Override
     public String getColumnName(int column) {
