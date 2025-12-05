@@ -213,10 +213,20 @@ public class FormaKnjiga extends javax.swing.JDialog {
 
     private void jButtonDodajActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDodajActionPerformed
         String naziv = jTextFieldNaziv.getText();
-        String isbn = jTextFieldISBN.getText();
+        if(naziv == null || naziv.trim().isEmpty() || naziv.trim().length() < 3){
+            JOptionPane.showMessageDialog(this, "Greska, pogresan naziv", "Greska", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        //email
+        //email.contains("@") ili email.startsWith("Va") ili email.endsWith(.com)
+        String isbn = jTextFieldISBN.getText(); //isto kao za naziv mogu
         int godiIzdanja;
         try{
             godiIzdanja = Integer.parseInt(jTextFieldGodIzdanja.getText());
+            if(godiIzdanja<1800 || godiIzdanja > 2023){
+                JOptionPane.showMessageDialog(this, "Greska, pogresna godina", "Greska", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(this, "Godina izdanja mora biti broj", "Greska", JOptionPane.ERROR_MESSAGE);
             return;

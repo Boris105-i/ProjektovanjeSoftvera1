@@ -122,5 +122,64 @@ public class DBBroker {
         }
     }
 
-    
+    public boolean login(String user, String pass) {
+        try {
+            String upit = "SELECT * FROM user WHERE username=? AND PASSWORD=?";
+            PreparedStatement ps = Konekcija.getInstance().getConnection().prepareStatement(upit);
+            ps.setString(1, user);
+            ps.setString(2, pass);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){//Ako postoji bar jedan red u tabeli to znaci da se korisnik ulogovao
+                return true;
+            }else{
+                return false;
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(DBBroker.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public List<Knjiga> filtrirajListu2(String autor, String naziv) {//autor = "Ivo Andric"
+        List<Knjiga> lista = new ArrayList<>();
+        try {
+        String upit = "SELECT * FROM knjiga k JOIN autor a ON k.autorid = a.id WHERE 1=1";//naslov = ? AND ime = ? AND prezime = ?";
+        if(naziv!=null){
+            upit +=" AND naslov ='" + naziv + "'";
+        }
+        if(autor!=null){
+            String[] podaci = autor.split(" ");//["Ivo", "Andric"]
+            if(podaci[0] != null){
+                upit +=" AND ime ='" + podaci[0] + "'";
+            }
+            if(podaci.length >= 2 && podaci[1] != null){ 
+                upit +=" AND prezime ='" + podaci[1] + "'";
+            }
+        }
+
+        Statement st = Konekcija.getInstance().getConnection().createStatement();
+        ResultSet rs = st.executeQuery(upit);
+            while(rs.next()){
+                int id = rs.getInt("k.id");//U zagradi naziv kolone
+                String naslov = rs.getString("k.naslov");
+                int godinaIzdanja = rs.getInt("k.godinaIzdanja");
+                String ISBN = rs.getString("k.ISBN");
+                String zanr = rs.getString("k.zanr");
+                Zanr z = Zanr.valueOf(zanr);//pretvorili String u enum
+                
+                int idA = rs.getInt("a.id");
+                String ime = rs.getString("a.ime");
+                String prezime = rs.getString("a.prezime");
+                String biografija = rs.getString("a.biografija");
+                int godinaRodj = rs.getInt("a.godinaRodjenja");
+                Autor a = new Autor(idA, ime, prezime, godinaRodj, biografija);
+                Knjiga k = new Knjiga(id, naslov, a, ISBN, godinaIzdanja, z);
+                lista.add(k);
+            }
+        }catch (SQLException ex) {
+            Logger.getLogger(DBBroker.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
 }
